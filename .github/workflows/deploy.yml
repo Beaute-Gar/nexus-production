@@ -1,0 +1,46 @@
+name: Deploy to Vercel
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          VITE_RAPIDAPI_KEY: ${{ secrets.VITE_RAPIDAPI_KEY }}
+          VITE_YOUTUBE_API_KEY: ${{ secrets.VITE_YOUTUBE_API_KEY }}
+          VITE_PEXELS_API_KEY: ${{ secrets.VITE_PEXELS_API_KEY }}
+          VITE_PIXABAY_API_KEY: ${{ secrets.VITE_PIXABAY_API_KEY }}
+          VITE_FREESOUND_CLIENT_ID: ${{ secrets.VITE_FREESOUND_CLIENT_ID }}
+          VITE_FREESOUND_CLIENT_SECRET: ${{ secrets.VITE_FREESOUND_CLIENT_SECRET }}
+          VITE_GROQ_API_KEY: ${{ secrets.VITE_GROQ_API_KEY }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_PROXY_URL: ${{ secrets.VITE_PROXY_URL }}
+          VITE_TIKTOK_CLIENT_ID: ${{ secrets.VITE_TIKTOK_CLIENT_ID }}
+          VITE_TIKTOK_CLIENT_SECRET: ${{ secrets.VITE_TIKTOK_CLIENT_SECRET }}
+
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: --prod
+          working-directory: ./
